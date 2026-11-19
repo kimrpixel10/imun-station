@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Imunisasi Posyandu – Puskesmas Simpur</title>
+<style>
+:root{--bg:#f4f6f8;--card:#fff;--tx:#1b1f24;--mut:#667085;--bd:#d9dde3;--ac:#0f766e;--acx:#fff;--soft:#e6f4f2;--bad:#b42318}
+@media (prefers-color-scheme:dark){:root{color-scheme:dark;--bg:#14171a;--card:#1d2125;--tx:#eceff3;--mut:#9aa3ae;--bd:#343a41;--ac:#2dd4bf;--acx:#06201d;--soft:#16302d;--bad:#f97066}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:15px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;padding:env(safe-area-inset-top) 0 calc(env(safe-area-inset-bottom) + 80px)}
+main{max-width:720px;margin:0 auto;padding:12px}
+h1{font-size:1.1rem;margin:2px 0}h2{font-size:1rem;margin:0 0 10px}
+.sub{color:var(--mut);font-size:.82rem;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:12px;padding:14px;margin-bottom:12px}
+label{display:block;font-size:.78rem;color:var(--mut);margin:0 0 3px}
+input,select{width:100%;padding:10px;border:1px solid var(--bd);border-radius:8px;background:var(--bg);color:var(--tx);font:inherit}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{font:inherit;padding:11px 14px;border-radius:8px;border:1px solid var(--ac);background:var(--ac);color:var(--acx);font-weight:600;cursor:pointer}
+button.sec{background:transparent;color:var(--ac)}
+button.del{background:transparent;border-color:var(--bd);color:var(--bad);padding:4px 9px;font-weight:400}
+.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:end;margin-top:12px}.bar>*{flex:1}
+.tabs{display:flex;gap:6px;margin-bottom:12px;position:sticky;top:0;background:var(--bg);padding:6px 0;z-index:5}
+.tabs button{flex:1;background:transparent;color:var(--ac);padding:9px 6px}.tabs button.on{background:var(--ac);color:var(--acx)}
+.grid{display:grid;grid-template-columns:1fr 64px 64px 44px;gap:6px;align-items:center}
+.grid .h{font-size:.72rem;color:var(--mut);text-align:center}
+.grid .g{grid-column:1/-1;background:var(--soft);border-radius:6px;padding:4px 8px;font-size:.78rem;font-weight:700;margin-top:6px}
+.grid input{padding:8px 4px;text-align:center}
+.grid .t{text-align:right;font-weight:600}
+.total{display:flex;justify-content:space-between;font-weight:700;border-top:1px solid var(--bd);margin-top:10px;padding-top:8px}
+.fixed{position:fixed;left:0;right:0;bottom:0;background:var(--card);border-top:1px solid var(--bd);padding:10px 12px calc(10px + env(safe-area-inset-bottom))}
+.fixed .in{max-width:720px;margin:0 auto;display:flex;gap:8px;align-items:center}
+.fixed .in div{flex:1;font-size:.85rem}
+.scroll{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.84rem}
+th,td{border-bottom:1px solid var(--bd);padding:6px 8px;text-align:left;white-space:nowrap}
+.n{text-align:right}tfoot td{font-weight:700}
+.msg{font-size:.84rem;margin-top:8px;min-height:1.2em;color:var(--mut)}.err{color:var(--bad)}
+.chip{display:inline-flex;gap:6px;align-items:center;border:1px solid var(--bd);border-radius:999px;padding:4px 6px 4px 12px;margin:3px 4px 3px 0}
+.chip button{padding:0 8px;border-radius:999px;background:transparent;color:var(--bad);border-color:transparent}
+[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<main>
+<h1>Imunisasi Posyandu – Puskesmas Simpur</h1>
+<div class="sub">Data tersimpan di perangkat ini (belum tersambung ke Spreadsheet).</div>
+<div class="tabs"><button data-t="in" class="on">Input</button><button data-t="rk">Rekap</button><button data-t="rw">Riwayat</button><button data-t="pg">Atur</button></div>
+
+<div id="in">
+<section class="card">
+<div class="row">
+<div><label for="pos">Posyandu</label><select id="pos"></select></div>
+<div><label for="tgl">Tanggal pelayanan</label><input type="date" id="tgl"></div>
+</div>
+<div class="msg" id="info"></div>
+</section>
+<section class="card">
+<div class="grid" id="grid"></div>
+<div class="total"><span>Total pemberian</span><span id="tot">0</span></div>
+</section>
+</div>
+
+<div id="rk" hidden>
+<section class="card">
+<div class="bar" style="margin-top:0">
+<div><label for="bb">Bulan</label><select id="bb"><option value="">Semua bulan</option><option value="01">Januari</option><option value="02">Februari</option><option value="03">Maret</option><option value="04">April</option><option value="05">Mei</option><option value="06">Juni</option><option value="07">Juli</option><option value="08">Agustus</option><option value="09">September</option><option value="10">Oktober</option><option value="11">November</option><option value="12">Desember</option></select></div><div><label for="by">Tahun</label><select id="by"></select></div>
+<button id="xls">Unduh Excel</button>
+</div>
+<div class="msg" id="msg2"></div>
+<h2 style="margin-top:12px">Rekap per posyandu</h2>
+<div class="scroll" id="rekap"></div>
+</section>
+</div>
+
+<div id="rw" hidden><section class="card"><h2>Lembar tersimpan</h2><div class="sub">Mengikuti filter bulan dan tahun di tab Rekap.</div><div class="scroll" id="riwayat"></div></section></div>
+
+<div id="pg" hidden>
+<section class="card">
+<h2>Daftar posyandu</h2>
+<div class="bar" style="margin-top:0"><input id="np" placeholder="Nama posyandu baru"><button id="tambah" style="flex:0 0 auto">Tambah</button></div>
+<div id="plist" style="margin-top:10px"></div>
+<div class="msg" id="msg3"></div>
+</section>
+<section class="card">
+<h2>Cadangan data</h2>
+<div class="sub">Simpan berkala, karena data hanya ada di peramban ini.</div>
+<div class="bar" style="margin-top:0"><button class="sec" id="bk">Unduh cadangan</button><button class="sec" id="rs">Pulihkan dari file</button></div>
+<input type="file" id="file" accept=".json" hidden>
+<div class="msg" id="msg4"></div>
+</section>
+</div>
+</main>
+
+<div class="fixed" id="fx"><div class="in"><div id="fxinfo">Isi jumlah, lalu simpan.</div><button id="simpan">Simpan lembar</button></div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const GRUP=[["Bayi baru lahir",["HB-0 (<24 jam)","BCG"]],["Polio",["Polio tetes 1","Polio tetes 2","Polio tetes 3","Polio tetes 4","IPV 1","IPV 2"]],["DPT-HB-Hib",["DPT-HB-Hib 1","DPT-HB-Hib 2","DPT-HB-Hib 3","DPT-HB-Hib lanjutan"]],["PCV",["PCV 1","PCV 2","PCV 3"]],["Rotavirus",["Rotavirus 1","Rotavirus 2","Rotavirus 3"]],["Campak-Rubella",["Campak-Rubella (MR) 1","MR lanjutan"]]];
+const JENIS=GRUP.flatMap(g=>g[1]);
+const $=id=>document.getElementById(id),KD="imun2-data",KP="imun2-pos";
+let data=[],posl=[];
+try{data=JSON.parse(localStorage.getItem(KD)||"[]");posl=JSON.parse(localStorage.getItem(KP)||"[]")}catch(e){}
+const store=()=>{try{localStorage.setItem(KD,JSON.stringify(data));localStorage.setItem(KP,JSON.stringify(posl))}catch(e){say("msg3","Penyimpanan peramban tidak tersedia; data tidak akan bertahan.",1)}};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const say=(id,t,e)=>{$(id).textContent=t;$(id).className="msg"+(e?" err":"")};
+const num=v=>Math.max(0,Math.min(1000,Math.floor(+v||0)));
+$("tgl").value=new Date().toISOString().slice(0,10);
+
+// grid
+$("grid").innerHTML='<div></div><div class="h">L</div><div class="h">P</div><div class="h">Jml</div>'+GRUP.map(([g,js])=>`<div class="g">${g}</div>`+js.map(j=>{const k=JENIS.indexOf(j);return`<div>${esc(j)}</div><input type="number" inputmode="numeric" min="0" data-k="${k}" data-s="lk" placeholder="0"><input type="number" inputmode="numeric" min="0" data-k="${k}" data-s="pr" placeholder="0"><div class="t" id="t${k}">0</div>`}).join("")).join("");
+const inp=(k,s)=>document.querySelector(`input[data-k="${k}"][data-s="${s}"]`);
+document.querySelectorAll("#grid input").forEach(i=>{i.onfocus=()=>i.select();i.oninput=hitung});
+function hitung(){let T=0;JENIS.forEach((j,k)=>{const t=num(inp(k,"lk").value)+num(inp(k,"pr").value);$("t"+k).textContent=t;T+=t});$("tot").textContent=T;$("fxinfo").textContent=T?T+" pemberian siap disimpan":"Isi jumlah, lalu simpan."}
+function muatLembar(){
+  const p=$("pos").value,t=$("tgl").value;
+  JENIS.forEach((j,k)=>{const r=data.find(d=>d.pos===p&&d.tgl===t&&d.jenis===j);inp(k,"lk").value=r?r.lk:"";inp(k,"pr").value=r?r.pr:""});
+  hitung();
+  const ada=data.some(d=>d.pos===p&&d.tgl===t);
+  say("info",ada?"Lembar ini sudah tersimpan. Perubahan akan menimpa data lama.":"Lembar baru.");
+}
+$("pos").onchange=muatLembar;$("tgl").onchange=muatLembar;
+
+$("simpan").onclick=()=>{
+  const p=$("pos").value,t=$("tgl").value;
+  if(!p){say("info","Tambahkan posyandu dulu di tab Atur.",1);return}
+  if(!t){say("info","Tanggal wajib diisi.",1);return}
+  const baru=[];JENIS.forEach((j,k)=>{const lk=num(inp(k,"lk").value),pr=num(inp(k,"pr").value);if(lk+pr>0)baru.push({pos:p,tgl:t,jenis:j,lk,pr})});
+  const ada=data.some(d=>d.pos===p&&d.tgl===t);
+  if(!baru.length&&!ada){say("info","Belum ada jumlah yang diisi.",1);return}
+  if(!baru.length&&!confirm("Semua jumlah kosong. Hapus lembar tersimpan untuk "+p+" tanggal "+t+"?"))return;
+  data=data.filter(d=>!(d.pos===p&&d.tgl===t)).concat(baru);store();
+  say("info",baru.length?"Tersimpan: "+baru.length+" jenis imunisasi untuk "+p+".":"Lembar dihapus.");renderAll();
+};
+
+// rekap
+const NB=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+const filt=()=>{const m=$("bb").value,y=$("by").value;return data.filter(r=>(!y||r.tgl.startsWith(y))&&(!m||r.tgl.slice(5,7)===m))};
+const periode=()=>{const m=$("bb").value,y=$("by").value;return(m?NB[+m-1]:"Semua bulan")+" "+(y||"semua tahun")};
+function isiTahun(){const th=new Set(data.map(r=>r.tgl.slice(0,4)));th.add(String(new Date().getFullYear()));const cur=$("by").value;$("by").innerHTML='<option value="">Semua tahun</option>'+[...th].sort().map(t=>`<option>${t}</option>`).join("");$("by").value=th.has(cur)?cur:""}
+function rekap(list){const pos=[...new Set(list.map(r=>r.pos))].sort(),jen=JENIS.filter(j=>list.some(r=>r.jenis===j)),m={};list.forEach(r=>{const k=r.jenis+"|"+r.pos;m[k]=(m[k]||0)+r.lk+r.pr});return{pos,jen,m}}
+function drawRekap(){
+  const list=filt();say("msg2","Periode: "+periode()+" ("+list.length+" baris data)");
+  if(!list.length){$("rekap").innerHTML='<div class="msg">Belum ada data.</div>';return}
+  const{pos,jen,m}=rekap(list),ct=pos.map(()=>0);
+  let h="<table><thead><tr><th>Jenis imunisasi</th>"+pos.map(p=>`<th class="n">${esc(p)}</th>`).join("")+'<th class="n">Total</th></tr></thead><tbody>';
+  jen.forEach(j=>{let t=0;h+=`<tr><td>${esc(j)}</td>`+pos.map((p,i)=>{const v=m[j+"|"+p]||0;t+=v;ct[i]+=v;return`<td class="n">${v}</td>`}).join("")+`<td class="n"><b>${t}</b></td></tr>`});
+  $("rekap").innerHTML=h+"</tbody><tfoot><tr><td>Total</td>"+ct.map(v=>`<td class="n">${v}</td>`).join("")+`<td class="n">${ct.reduce((a,c)=>a+c,0)}</td></tr></tfoot></table>`;
+}
+$("bb").onchange=()=>{drawRekap();drawRiwayat()};$("by").onchange=()=>{drawRekap();drawRiwayat()};
+
+function unduh(buf,nama,tipe){const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([buf],{type:tipe}));a.download=nama;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000)}
+$("xls").onclick=()=>{
+  const list=filt().sort((a,c)=>a.tgl.localeCompare(c.tgl)||a.pos.localeCompare(c.pos));
+  if(!list.length){say("msg2","Tidak ada data untuk diunduh.",1);return}
+  if(typeof XLSX==="undefined"){say("msg2","Pustaka Excel gagal dimuat (perlu internet). Muat ulang halaman.",1);return}
+  const b=periode().replace(/ /g,"_"),{pos,jen,m}=rekap(list);
+  const d=[["No","Tanggal","Posyandu","Jenis Imunisasi","Laki-laki","Perempuan","Jumlah"]];
+  list.forEach((r,i)=>d.push([i+1,r.tgl,r.pos,r.jenis,r.lk,r.pr,r.lk+r.pr]));
+  d.push(["","","","TOTAL",list.reduce((a,r)=>a+r.lk,0),list.reduce((a,r)=>a+r.pr,0),list.reduce((a,r)=>a+r.lk+r.pr,0)]);
+  const k=[["LAPORAN IMUNISASI POSYANDU – PUSKESMAS SIMPUR"],["Periode: "+periode()],[],["Jenis Imunisasi",...pos,"Total"]],ct=pos.map(()=>0);
+  jen.forEach(j=>{let t=0;const x=pos.map((p,i)=>{const v=m[j+"|"+p]||0;t+=v;ct[i]+=v;return v});k.push([j,...x,t])});
+  k.push(["TOTAL",...ct,ct.reduce((a,c)=>a+c,0)]);
+  const wb=XLSX.utils.book_new(),s1=XLSX.utils.aoa_to_sheet(k),s2=XLSX.utils.aoa_to_sheet(d);
+  s1["!cols"]=[{wch:28},...pos.map(()=>({wch:16})),{wch:10}];s2["!cols"]=[{wch:5},{wch:12},{wch:22},{wch:28},{wch:10},{wch:11},{wch:10}];
+  XLSX.utils.book_append_sheet(wb,s1,"Rekap");XLSX.utils.book_append_sheet(wb,s2,"Data");
+  unduh(XLSX.write(wb,{type:"array",bookType:"xlsx"}),"Laporan_Imunisasi_Simpur_"+b+".xlsx","application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+  say("msg2","Excel diunduh ("+periode()+"). Cek folder Unduhan.");
+};
+
+// riwayat
+function drawRiwayat(){
+  const L={};filt().forEach(r=>{const k=r.tgl+"|"+r.pos;L[k]=(L[k]||0)+r.lk+r.pr});
+  const ks=Object.keys(L).sort().reverse();
+  $("riwayat").innerHTML=ks.length?'<table><thead><tr><th>Tanggal</th><th>Posyandu</th><th class="n">Total</th><th></th></tr></thead><tbody>'+ks.map(k=>{const[t,p]=k.split("|");return`<tr><td>${esc(t)}</td><td>${esc(p)}</td><td class="n">${L[k]}</td><td><button class="sec" style="padding:4px 9px" data-b="${esc(k)}">Buka</button> <button class="del" data-d="${esc(k)}">Hapus</button></td></tr>`}).join("")+"</tbody></table>":'<div class="msg">Belum ada lembar tersimpan.</div>';
+  $("riwayat").querySelectorAll("[data-b]").forEach(b=>b.onclick=()=>{const[t,p]=b.dataset.b.split("|");$("tgl").value=t;if(!posl.includes(p)){posl.push(p);store();drawPos()}$("pos").value=p;muatLembar();tab("in")});
+  $("riwayat").querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{const[t,p]=b.dataset.d.split("|");if(confirm("Hapus lembar "+p+" tanggal "+t+"?")){data=data.filter(d=>!(d.pos===p&&d.tgl===t));store();renderAll();muatLembar()}});
+}
+
+// posyandu
+function drawPos(){
+  $("pos").innerHTML=posl.length?posl.map(p=>`<option>${esc(p)}</option>`).join(""):'<option value="">(belum ada posyandu)</option>';
+  $("plist").innerHTML=posl.map((p,i)=>`<span class="chip">${esc(p)}<button data-i="${i}" aria-label="Hapus">×</button></span>`).join("")||'<div class="msg">Belum ada posyandu. Tambahkan nama posyandu di atas.</div>';
+  $("plist").querySelectorAll("button").forEach(b=>b.onclick=()=>{const p=posl[+b.dataset.i];if(confirm("Hapus "+p+" dari daftar? Data lama tetap tersimpan.")){posl.splice(+b.dataset.i,1);store();drawPos();muatLembar()}});
+}
+$("tambah").onclick=()=>{
+  const p=$("np").value.replace(/[|\n]/g," ").trim().slice(0,60);
+  if(!p)return;
+  if(posl.some(x=>x.toLowerCase()===p.toLowerCase())){say("msg3","Nama itu sudah ada.",1);return}
+  posl.push(p);posl.sort();store();$("np").value="";drawPos();say("msg3","Ditambahkan: "+p);muatLembar();
+};
+
+// cadangan
+$("bk").onclick=()=>{unduh(JSON.stringify({v:2,posl,data}),"Cadangan_Imunisasi_"+new Date().toISOString().slice(0,10)+".json","application/json");say("msg4","Cadangan diunduh.")};
+$("rs").onclick=()=>$("file").click();
+$("file").onchange=async e=>{
+  try{
+    const o=JSON.parse(await e.target.files[0].text());
+    if(!Array.isArray(o.data)||!Array.isArray(o.posl))throw 0;
+    const ok=o.data.filter(r=>r&&typeof r.pos==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(r.tgl)&&JENIS.includes(r.jenis)).map(r=>({pos:r.pos.slice(0,60),tgl:r.tgl,jenis:r.jenis,lk:num(r.lk),pr:num(r.pr)}));
+    if(!confirm("Pulihkan "+ok.length+" baris? Data dengan posyandu, tanggal, dan jenis yang sama akan ditimpa."))return;
+    const key=r=>r.pos+"|"+r.tgl+"|"+r.jenis,M=new Map(data.map(r=>[key(r),r]));ok.forEach(r=>M.set(key(r),r));data=[...M.values()];
+    o.posl.filter(p=>typeof p==="string").forEach(p=>{if(!posl.includes(p))posl.push(p.slice(0,60))});posl.sort();
+    store();renderAll();muatLembar();say("msg4","Dipulihkan: "+ok.length+" baris.");
+  }catch(err){say("msg4","File cadangan tidak valid.",1)}
+  e.target.value="";
+};
+
+function renderAll(){isiTahun();drawRekap();drawRiwayat()}
+function tab(t){
+  document.querySelectorAll(".tabs button").forEach(x=>x.classList.toggle("on",x.dataset.t===t));
+  ["in","rk","rw","pg"].forEach(x=>$(x).hidden=x!==t);$("fx").hidden=t!=="in";
+  if(t==="rk")drawRekap();if(t==="rw")drawRiwayat();
+}
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>tab(b.dataset.t));
+drawPos();muatLembar();renderAll();
+if(!posl.length)say("info","Mulai dari tab Atur: tambahkan nama posyandu.");
+</script>
+</body>
+</html>
